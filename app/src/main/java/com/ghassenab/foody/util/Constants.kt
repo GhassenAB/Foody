@@ -1,4 +1,4 @@
-package com.ghassenab.foody
+package com.ghassenab.foody.util
 
 class Constants {
     companion object {
