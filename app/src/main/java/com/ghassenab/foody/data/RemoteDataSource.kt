@@ -1,5 +1,6 @@
-package com.ghassenab.foody
+package com.ghassenab.foody.data
 
+import com.ghassenab.foody.data.network.FoodRecipesApi
 import com.ghassenab.foody.models.FoodRecipe
 import javax.inject.Inject
 import retrofit2.Response

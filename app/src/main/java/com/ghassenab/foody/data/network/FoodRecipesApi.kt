@@ -1,4 +1,4 @@
-package com.ghassenab.foody
+package com.ghassenab.foody.data.network
 
 import retrofit2.Response
 import retrofit2.http.GET

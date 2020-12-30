@@ -1,4 +1,4 @@
-package com.ghassenab.foody
+package com.ghassenab.foody.viewmodels
 
 import android.app.Application
 import android.content.Context
@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.ghassenab.foody.data.Repository
 import com.ghassenab.foody.models.FoodRecipe
 import com.ghassenab.foody.util.NetworkResult
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
