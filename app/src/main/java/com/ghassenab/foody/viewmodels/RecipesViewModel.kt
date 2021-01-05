@@ -1,8 +1,10 @@
 package com.ghassenab.foody.viewmodels
 
 import android.app.Application
+import android.widget.Toast
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.ghassenab.foody.data.DataStoreRepository
 import com.ghassenab.foody.util.Constants.Companion.API_KEY
@@ -18,7 +20,6 @@ import com.ghassenab.foody.util.Constants.Companion.QUERY_TYPE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 class RecipesViewModel @ViewModelInject constructor(
     application: Application,
@@ -28,21 +29,29 @@ class RecipesViewModel @ViewModelInject constructor(
     private var mealType = DEFAULT_MEAL_TYPE
     private var dietType = DEFAULT_DIET_TYPE
 
-    val readMealAndDietType = dataStoreRepository.readMealAndDietType
+    var networkStatus = false
+    var backOnline = false
 
-    fun saveMealAndDietType(mealType: String, mealTypeid: Int, dietType: String, dietTypeId: Int) {
+    val readMealAndDietType = dataStoreRepository.readMealAndDietType
+    val readBackOnline = dataStoreRepository.readBackOnline.asLiveData()
+
+    fun saveMealAndDietType(mealType: String, mealTypeId: Int, dietType: String, dietTypeId: Int) =
         viewModelScope.launch(Dispatchers.IO) {
-            dataStoreRepository.saveMealAndDietType(mealType, mealTypeid, dietType, dietTypeId)
+            dataStoreRepository.saveMealAndDietType(mealType, mealTypeId, dietType, dietTypeId)
         }
-    }
+
+    private fun saveBackOnline(backOnline: Boolean) =
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.saveBackOnline(backOnline)
+        }
 
     fun applyQueries(): HashMap<String, String> {
         val queries: HashMap<String, String> = HashMap()
 
         viewModelScope.launch {
-            readMealAndDietType.collect { values ->
-                mealType = values.selectedMealType
-                dietType = values.selectedDietType
+            readMealAndDietType.collect { value ->
+                mealType = value.selectedMealType
+                dietType = value.selectedDietType
             }
         }
 
@@ -55,4 +64,19 @@ class RecipesViewModel @ViewModelInject constructor(
 
         return queries
     }
+
+    fun showNetworkStatus() {
+
+        if (!networkStatus) {
+            Toast.makeText(getApplication(), "No Internet Connection.", Toast.LENGTH_SHORT).show()
+            saveBackOnline(true)
+        } else if (networkStatus) {
+            if (backOnline) {
+                Toast.makeText(getApplication(), "We're back online.", Toast.LENGTH_SHORT).show()
+                saveBackOnline(false)
+            }
+        }
+
+    }
+
 }
